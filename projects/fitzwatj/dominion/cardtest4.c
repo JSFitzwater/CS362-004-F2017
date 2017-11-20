@@ -25,29 +25,33 @@
 
 int main() {
 
-    int cardsAdd1,
+    int i, j, cardsAdd1,
         cardsAdd2,
         cardsGone1,
-        cardsAdd2,
+        cardsGone2,
         choice1,
         choice2,
         currentPlayer = 0,
+        emptyDeckAudit = 0,
         handAmt = 0,
         handPos,
         handMax = 5,
-        numPlayers = 2;
+        numPlayers = 2,
         z, cc=0, bb=0, aa=0,
         cardDrawn,
         drawntreasure;
 
     int *temphand;
+    int *thAudit;
+    int *dtAudit;
+    int *dpAudit;
         
 
     int gameSeed = 555;
 
 
-	int cds[10] = { adventurer, baron, cellar, cutpurse,
-                    duchy, laboratory, minion, sea_hag, 
+	int cds[10] = { adventurer, baron, village, cutpurse,
+                    duchy, village, minion, sea_hag, 
                     smithy, village };
 
     struct gameState origGame, scratchGame;
@@ -61,7 +65,7 @@ int main() {
 //
     printf( " - Init test-run, card: adventurer - \n\n" );
 
-    printf( " Adventurer: reveal cards in deck until 2 treasure kinds uncovered (else, stop on full deck seen); then, draw +2 cards and discard those revealed.\n\n" )
+    printf( " Adventurer: reveal cards in deck until 2 treasure kinds uncovered (else, stop on full deck seen); then, draw +2 cards and discard those revealed.\n\n" );
 
 
     /* Init a Working Game */
@@ -81,17 +85,17 @@ int main() {
     while(drawntreasure<2)
     {
         // "if the deck is empty we need to shuffle discard and add to deck"
-        if (scratchGame->deckCount[currentPlayer] <1)
+        if (scratchGame.deckCount[currentPlayer] <1)
         {
             emptyDeckAudit += 1;
 
-            shuffle(currentPlayer, scratchGame);
+            shuffle(currentPlayer, &scratchGame);
         }
 
-        drawCard(currentPlayer, scratchGame);
+        drawCard(currentPlayer, &scratchGame);
 
         // "top card of hand is most recently drawn card."
-        cardDrawn = scratchGame->hand[currentPlayer][scratchGame->handCount[currentPlayer]-1];
+        cardDrawn = scratchGame.hand[currentPlayer][scratchGame.handCount[currentPlayer]-1];
 
         if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
         {
@@ -105,7 +109,7 @@ int main() {
             thAudit[cc++] = temphand[z];
             
             // "this should just remove the top card (the most recently drawn one)."
-            scratchGame->handCount[currentPlayer]--; 
+            scratchGame.handCount[currentPlayer]--; 
             z++;
         }
     }
@@ -113,7 +117,7 @@ int main() {
     while(z-1>=0)
     {
         // "discard all cards in play that have been drawn"
-        scratchGame->discard[currentPlayer][scratchGame->discardCount[currentPlayer]++]
+        scratchGame.discard[currentPlayer][scratchGame.discardCount[currentPlayer]++]
 			= temphand[z-1]; 
 
         dpAudit[aa++] = temphand[z-1];
@@ -133,8 +137,8 @@ int main() {
     printf( "Num instances deck completely exhausted: %d \n\n", emptyDeckAudit );
 
     printf( "Player's original hand: " );
-    while(origGame->hand[currentPlayer][bb]){
-        printf( "%d ", origGame->hand[currentPlayer][bb] );
+    while(origGame.hand[currentPlayer][bb]){
+        printf( "%d ", origGame.hand[currentPlayer][bb] );
         bb++;
     }
 

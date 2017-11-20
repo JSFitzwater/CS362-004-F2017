@@ -25,10 +25,10 @@
 
 int main() {
 
-    int cardsAdd1,
+    int i, j, cardsAdd1,
         cardsAdd2,
         cardsGone1,
-        cardsAdd2,
+        cardsGone2,
         choice1,
         choice2,
         currentPlayer = 0,
@@ -41,8 +41,8 @@ int main() {
     int gameSeed = 555;
 
 
-	int cds[10] = { adventurer, baron, cellar, cutpurse,
-                    duchy, laboratory, minion, sea_hag, 
+	int cds[10] = { adventurer, baron, village, cutpurse,
+                    duchy, village, minion, sea_hag, 
                     smithy, village };
 
     struct gameState origGame, scratchGame;
@@ -56,7 +56,7 @@ int main() {
 //
     printf( " - Init test-run, card: minion - \n\n" );
 
-    printf( " Minion: player may select one of two options: \n(1) add +2 gold cards, or (2) discard hand and redraw cards \n[then, all other players with 5 cards in-hand redraw 4 cards].\n\n" )
+    printf( " Minion: player may select one of two options: \n(1) add +2 gold cards, or (2) discard hand and redraw cards \n[then, all other players with 5 cards in-hand redraw 4 cards].\n\n" );
 
 
     /* Init a Working Game */
@@ -74,10 +74,10 @@ int main() {
     memcpy( &scratchGame, &origGame, sizeof(struct gameState) );
 
 
-    scratchGame->numActions++;
+    scratchGame.numActions++;
 
     // discard this card from hand
-    discardCard( handPos, currentPlayer, scratchGame, 0 );
+    discardCard( handPos, currentPlayer, &scratchGame, 0 );
 
     // +2 coin action to player
     scratchGame.coins = origGame.coins + 2;
@@ -87,7 +87,7 @@ int main() {
 
     currentPlayer = 0,
 
-    printf( "Current Player Gold:\n - gold coins now held: %d \n - num gold should be: %d\n\n", scratchGame.coins[currentPlayer], origGame.coins[currentPlayer] + (2) );
+    printf( "Current Player Gold:\n - gold coins now held: %d \n - num gold should be: %d\n\n", scratchGame.coins, origGame.coins + (2) );
 
     printf( "Current Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayer] );
 
@@ -97,9 +97,9 @@ int main() {
 
     currentPlayer = 1,
 
-    printf( "Opposing Player Gold:\n - gold coins now held: %d \n - num gold should be: %d\n\n", scratchGame.coins[currentPlayer], origGame.coins[currentPlayer] );
+    printf( "Opposing Player Gold:\n - gold coins now held: %d \n - num gold should be: %d\n\n", scratchGame.coins, origGame.coins );
 
-    printf( "Opposing Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayerPlayer] );
+    printf( "Opposing Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayer] );
 
     printf( "Opposing Player Deck Status:\n - num cards populating deck: %d \n - num deck cards should be: %d\n\n", scratchGame.deckCount[currentPlayer], origGame.deckCount[currentPlayer] );
 
@@ -107,21 +107,21 @@ int main() {
 
     currentPlayer = 0,
 
-    assert( scratchGame.coins[currentPlayer] == origGame.coins[currentPlayer] + (2) );
+    assert( scratchGame.coins == origGame.coins + (2) );
 
-    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayerPlayer] + (cardsAdd1-cardsGone1) );
+    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayer] + (cardsAdd1-cardsGone1) );
 
-    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayerPlayer] - (cardsAdd1-cardsGone1) );
+    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayer] - (cardsAdd1-cardsGone1) );
 
         /* -- ASSERT: OPPOSING PLAYER -- */
 
     currentPlayer = 1,
 
-    assert( scratchGame.coins[currentPlayer] == origGame.coins[currentPlayer] );
+    assert( scratchGame.coins == origGame.coins );
 
-    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayerPlayer] + (cardsAdd2-cardsGone2) );
+    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayer] + (cardsAdd2-cardsGone2) );
 
-    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayerPlayer] - (cardsAdd2-cardsGone2) );
+    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayer] - (cardsAdd2-cardsGone2) );
 
 
 
@@ -146,38 +146,38 @@ int main() {
     cardsGone2 = 0;
 
     //discard hand
-    while(numHandCards(scratchGame) > 0)
+    while(scratchGame.handCount[currentPlayer] > 0)
     {
         cardsGone1 += 1;
-        discardCard(handPos, currentPlayer, scratchGame, 0);
+        discardCard(handPos, currentPlayer, &scratchGame, 0);
     }
 
     //draw 4
     for (i = 0; i < 4; i++)
     {
         cardsAdd1 +=1;
-        drawCard(currentPlayer, scratchGame);
+        drawCard(currentPlayer, &scratchGame);
     }
 
     //other players discard hand and redraw if hand size > 4
-    for (i = 0; i < scratchGame->numPlayers; i++)
+    for (i = 0; i < scratchGame.numPlayers; i++)
     {
         if (i == currentPlayer)
         {
-            if ( scratchGame->handCount[i] > 4 )
+            if ( scratchGame.handCount[i] > 4 )
             {
                 //discard hand
-                while( scratchGame->handCount[i] > 0 )
+                while( scratchGame.handCount[i] > 0 )
                 {
                     cardsGone2 += 1;
-                    discardCard(handPos, i, scratchGame, 0);
+                    discardCard(handPos, i, &scratchGame, 0);
                 }
                     
                 //draw 4
                 for (j = 0; j < 4; j++)
                 {
                     cardsAdd2 +=1;
-                    drawCard(i, scratchGame);
+                    drawCard(i, &scratchGame);
                 }
             }
         }
@@ -188,7 +188,7 @@ int main() {
 
     currentPlayer = 0,
 
-    printf( "Current Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayer] + (cardsAdd-cardsGone) );
+    printf( "Current Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayer] + (cardsAdd1-cardsGone1) );
 
     printf( "Current Player Deck Status:\n - num cards populating deck: %d \n - num deck cards should be: %d\n\n", scratchGame.deckCount[currentPlayer], origGame.deckCount[currentPlayer] - (cardsAdd1-cardsGone1) );
 
@@ -196,7 +196,7 @@ int main() {
 
     currentPlayer = 1,
 
-    printf( "Opposing Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayerPlayer] + (cardsAdd2-cardsGone2) );
+    printf( "Opposing Player Hand:\n - num cards now held: %d \n - num held cards should be: %d\n\n", scratchGame.handCount[currentPlayer], origGame.handCount[currentPlayer] + (cardsAdd2-cardsGone2) );
 
     printf( "Opposing Player Deck Status:\n - num cards populating deck: %d \n - num deck cards should be: %d\n\n", scratchGame.deckCount[currentPlayer], origGame.deckCount[currentPlayer] - (cardsAdd2-cardsGone2) );
 
@@ -204,17 +204,17 @@ int main() {
 
     currentPlayer = 0,
 
-    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayerPlayer] + (cardsAdd1-cardsGone1) );
+    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayer] + (cardsAdd1-cardsGone1) );
 
-    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayerPlayer] - (cardsAdd1-cardsGone1) );
+    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayer] - (cardsAdd1-cardsGone1) );
 
         /* -- ASSERT: OPPOSING PLAYER -- */
 
     currentPlayer = 1,
 
-    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayerPlayer] + (cardsAdd2-cardsGone2) );
+    assert( scratchGame.handCount[currentPlayer] == origGame.handCount[currentPlayer] + (cardsAdd2-cardsGone2) );
 
-    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayerPlayer] - (cardsAdd2-cardsGone2) );
+    assert( scratchGame.deckCount[currentPlayer] == origGame.deckCount[currentPlayer] - (cardsAdd2-cardsGone2) );
 
 
     return 0;

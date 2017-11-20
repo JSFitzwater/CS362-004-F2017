@@ -5,7 +5,7 @@
 
 #define MAX_HAND 500
 #define MAX_DECK 500
- 
+
 #define MAX_PLAYERS 4
 
 #define DEBUG 0

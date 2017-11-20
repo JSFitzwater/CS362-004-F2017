@@ -1,0 +1,14 @@
+James Fitzwater
+Assignment #5
+
+BugsInTeammateCode
+
+
+dominion.c: In function ‘gameState* newGame()’:
+dominion.c:17:56: error: invalid conversion from ‘void*’ to ‘gameState*’
+   struct gameState* g = malloc(sizeof(struct gameState));
+                  
+                                      
+dominion.c: In function ‘int* kingdomCards(int, int, int, int, int, int, int, int, int, int)’:
+dominion.c:23:35: error: invalid conversion from ‘void*’ to ‘int*’
+   int* k = malloc(10 * sizeof(int));

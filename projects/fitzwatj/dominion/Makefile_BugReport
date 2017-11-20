@@ -1,0 +1,49 @@
+CFLAGS = -Wall -fpic -coverage -lm -std=c99
+
+default: tests.out
+
+tests.out: randomtestadventure.c randomtestcard1.c randomtestcard2.c unittest1.c unittest2.c unittest3.c unittest4.c dominion.c rngs.c
+
+
+	echo " -- RESULT TESTRUNS --" > tests.out
+	
+	echo "randomtestadventure.c:" >> tests.out
+	gcc -o randomtestadventure rngs.c dominion.c randomtestadventure.c $(CFLAGS)
+	randomtestadventure >> tests.out
+	gcov dominion.c -b >> tests.out
+	
+	echo "randomtestcard1.c:" >> tests.out
+	gcc -o randomtestcard1 rngs.c dominion.c randomtestcard1.c $(CFLAGS)
+	randomtestcard1 >> tests.out
+	gcov dominion.c -b >> tests.out
+	
+	echo "randomtestcard2.c:" >> tests.out
+	gcc -o randomtestcard2 rngs.c dominion.c randomtestcard2.c $(CFLAGS)
+	randomtestcard2 >> tests.out
+	gcov dominion.c -b >> tests.out
+	
+	echo "unittest1.c:" >> tests.out
+	gcc -o unittest1 rngs.c dominion.c unittest1.c $(CFLAGS)
+	unittest1 >> tests.out
+	gcov dominion.c -b >> tests.out
+	
+	echo "unittest2.c:" >> tests.out
+	gcc -o unittest2 rngs.c dominion.c unittest2.c $(CFLAGS)
+	unittest2 >> tests.out
+	gcov dominion.c -b >> tests.out
+	
+	echo "unittest3.c:" >> tests.out
+	gcc -o unittest3 rngs.c dominion.c unittest3.c $(CFLAGS)
+	unittest3 >> tests.out
+	gcov dominion.c -b >> tests.out
+	
+	echo "unittest4.c:" >> tests.out
+	gcc -o unittest4 rngs.c dominion.c unittest4.c $(CFLAGS)
+	unittest4 >> tests.out
+	gcov dominion.c -b >> tests.out
+
+clean:
+	rm tests.out
+
+cleanall: 
+	rm tests.out randomtestadventure randomtestcard1 randomtestcard2 unittest1 unittest2 unittest3 unittest4 *.gcda *.gcno *.gcov
